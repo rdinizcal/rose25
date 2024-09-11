@@ -9,13 +9,14 @@ from geometry_msgs.msg import Twist
 import math
 from random import randint
 from std_srvs.srv import Empty
-
+from mars_rover_srvs.srv import MoveService
 
 # A node for performing combination of motions from different moving parts of the Curiosity rover.
 class RunDemo(Node):
     def __init__(self) -> None:
         super().__init__('run_node')
         self.motion_publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
+        self.move_srv = self.create_service(MoveService, 'move', self.move_callback)
         self.forward_srv = self.create_service(Empty, 'move_forward', self.move_forward_callback)
         self.stop_srv = self.create_service(Empty, 'move_stop', self.move_stop_callback)
         self.left_srv = self.create_service(Empty, 'turn_left', self.turn_left_callback)
@@ -30,6 +31,12 @@ class RunDemo(Node):
     def timer_callback(self):
         if (not self.stopped):
             self.motion_publisher_.publish(self.curr_action)
+
+    def move_callback(self, request, response):
+        self.get_logger().info("Moving")
+        self.curr_action = request.twist
+        self.stopped = False
+        return response
 
     def move_forward_callback(self, request, response):
         self.get_logger().info("Moving forward")
