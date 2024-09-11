@@ -310,3 +310,43 @@ NodeStatus CheckCondition::tick()
 
   return ref_value == value ? NodeStatus::SUCCESS : NodeStatus::FAILURE;
 }
+
+// CheckSelection
+CheckSelection::CheckSelection(const std::string &name, const NodeConfiguration &config) :
+    SyncActionNode(name, config)
+{}
+
+PortsList CheckSelection::providedPorts ()
+{
+  return {
+    InputPort<std::string>("selected"),
+    InputPort<std::string>("current")
+  };
+}
+
+NodeStatus CheckSelection::tick()
+{
+  std::cout << "Executing CheckSelection" << std::endl;
+
+  Optional<std::string> selected_msg = getInput<std::string>("selected");
+  if (!selected_msg)
+  {
+    throw RuntimeError("missing required input [selected]: ", selected_msg.error());
+  }
+  std::string selected_name = selected_msg.value();
+  std::cout << "Selected alternative " << selected_name << std::endl;
+
+  Optional<std::string> current_msg = getInput<std::string>("current");
+  if (!current_msg)
+  {
+    throw RuntimeError("missing required input [current]: ", current_msg.error());
+  }
+  std::string current_name = current_msg.value();
+  std::cout << "Checking against " << current_name << std::endl;
+
+  auto selected = current_name == selected_name;
+
+  std::cout << "Selected? (0: no, 1: yes) " << selected << std::endl;
+
+  return selected ? NodeStatus::SUCCESS : NodeStatus::FAILURE;
+}

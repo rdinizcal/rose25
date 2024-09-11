@@ -100,6 +100,8 @@ int main(int argc, char **argv)
             return std::make_unique<CheckCondition>(name, config, condition_manager);
     });
 
+    factory.registerNodeType<CheckSelection>("CheckSelection");
+
     auto tree = factory.createTreeFromFile(xml_file);
 
     tree.tickRootWhileRunning();
