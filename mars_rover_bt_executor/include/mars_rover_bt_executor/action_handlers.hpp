@@ -140,4 +140,14 @@ class CheckCondition : public BT::SyncActionNode
 
 };
 
+class CheckSelection : public BT::SyncActionNode
+{
+  public:
+    CheckSelection(const std::string &name, const BT::NodeConfiguration &config);
+
+    static BT::PortsList providedPorts ();
+
+    BT::NodeStatus tick() override;
+};
+
 #endif

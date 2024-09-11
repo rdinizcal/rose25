@@ -44,6 +44,7 @@ install(PROGRAMS
   nodes/move_arm
   nodes/move_mast
   nodes/move_wheel
+  nodes/battery
   nodes/run_demo
   nodes/odom_tf_publisher
   DESTINATION lib/${PROJECT_NAME}
