@@ -3,7 +3,6 @@
 #include <std_srvs/srv/empty.hpp>
 #include "mars_rover_bt_executor/action_publisher.hpp"
 #include "mars_rover_srvs/srv/move_service.hpp"
-#include <cmath>
 
 ActionPublisher::ActionPublisher(std::shared_ptr<rclcpp::Node> node) :
     node_(node)
@@ -38,7 +37,7 @@ void ActionPublisher::stop()
     }
 }
 
-void ActionPublisher::move(double speed, double duration)
+void ActionPublisher::move(double speed)
 {
     RCLCPP_INFO(node_->get_logger(), "Calling /move service");
     auto request = std::make_shared<mars_rover_srvs::srv::MoveService::Request>();
@@ -51,11 +50,9 @@ void ActionPublisher::move(double speed, double duration)
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
-
-    this->wait_then_stop(duration);
 }
 
-void ActionPublisher::move_forward(double duration)
+void ActionPublisher::move_forward()
 {
     RCLCPP_INFO(node_->get_logger(), "Calling /move_forward service to move forward");
     auto request = std::make_shared<std_srvs::srv::Empty::Request>();
@@ -67,11 +64,9 @@ void ActionPublisher::move_forward(double duration)
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
-
-    this->wait_then_stop(duration);
 }
 
-void ActionPublisher::turn_left(double angle)
+void ActionPublisher::turn_left()
 {
     RCLCPP_INFO(node_->get_logger(), "Calling /turn_left service");
     auto request = std::make_shared<std_srvs::srv::Empty::Request>();
@@ -84,15 +79,9 @@ void ActionPublisher::turn_left(double angle)
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
 
-    // Compute rotation time
-    double radiant_angle = angle * M_PI / 180.0;
-    double duration = radiant_angle / z_angular_speed_;
-    RCLCPP_INFO(node_->get_logger(), "Movement duration: %f", duration);
-
-    this->wait_then_stop(duration);
 }
 
-void ActionPublisher::turn_right(double angle)
+void ActionPublisher::turn_right()
 {
     RCLCPP_INFO(node_->get_logger(), "Calling /turn_right service");
     auto request = std::make_shared<std_srvs::srv::Empty::Request>();
@@ -105,12 +94,6 @@ void ActionPublisher::turn_right(double angle)
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
 
-    // Compute rotation time
-    double radiant_angle = angle * M_PI / 180.0;
-    double duration = radiant_angle / z_angular_speed_;
-    RCLCPP_INFO(node_->get_logger(), "Movement duration: %f", duration);
-
-    this->wait_then_stop(duration);
 }
 
 void ActionPublisher::open_tool_arm()
@@ -125,8 +108,6 @@ void ActionPublisher::open_tool_arm()
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
-
-    this->wait_then_stop(arm_movement_time_);
 }
 
 void ActionPublisher::close_tool_arm()
@@ -141,8 +122,6 @@ void ActionPublisher::close_tool_arm()
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
-
-    this->wait_then_stop(arm_movement_time_);
 }
 
 void ActionPublisher::open_mast()
@@ -157,8 +136,6 @@ void ActionPublisher::open_mast()
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
-
-    this->wait_then_stop(mast_closing_opening_time_);
 }
 
 void ActionPublisher::close_mast()
@@ -173,8 +150,6 @@ void ActionPublisher::close_mast()
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
-
-    this->wait_then_stop(mast_closing_opening_time_);
 }
 
 void ActionPublisher::rotate_mast()
@@ -189,14 +164,4 @@ void ActionPublisher::rotate_mast()
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
-
-    this->wait_then_stop(mast_rotation_time_);
-}
-
-void ActionPublisher::wait_then_stop(double wait_time)
-{
-    RCLCPP_INFO(node_->get_logger(), "Waiting for the action to be completed before stopping");
-    auto converted_time = std::chrono::nanoseconds(static_cast<int64_t>(wait_time * 1e9));
-    rclcpp::sleep_for(std::chrono::nanoseconds(converted_time));
-    this->stop();
 }

@@ -1,6 +1,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "mars_rover_bt_executor/action_handlers.hpp"
 #include "mars_rover_bt_executor/condition_manager.hpp"
+#include <chrono>
+#include <future>
+#include <cmath>
 
 using namespace BT;
 
@@ -33,7 +36,14 @@ NodeStatus Move::tick()
   double time = std::stod(time_msg.value());
   double speed = std::stod(speed_msg.value());
 
-  publisher_->move(speed, time);
+  auto future = std::async(std::launch::async, [this, time, speed]() {
+    auto converted_time = std::chrono::nanoseconds(static_cast<int64_t>(time * 1e9));
+    publisher_->move(speed);
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::nanoseconds(converted_time));
+    publisher_->stop();
+  });
+  future.get();
 
   return NodeStatus::SUCCESS;
 }
@@ -72,7 +82,14 @@ NodeStatus MoveForward::tick()
 
   double time = std::stod(time_msg.value());
 
-  publisher_->move_forward(time);
+  auto future = std::async(std::launch::async, [this, time]() {
+    auto converted_time = std::chrono::nanoseconds(static_cast<int64_t>(time * 1e9));
+    publisher_->move_forward();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::nanoseconds(converted_time));
+    publisher_->stop();
+  });
+  future.get();
 
   return NodeStatus::SUCCESS;
 }
@@ -100,7 +117,19 @@ NodeStatus TurnLeft::tick()
   double angle = std::stod(angle_msg.value());
   std::cout << "Turning left of " << angle << " degrees" << std::endl;
 
-  publisher_->turn_left(angle);
+  // Compute rotation time
+  double radiant_angle = angle * M_PI / 180.0;
+  double duration = radiant_angle / 0.4;
+  std::cout << "Movement duration: " << duration << std::endl;
+
+  auto future = std::async(std::launch::async, [this, duration]() {
+    auto converted_time = std::chrono::nanoseconds(static_cast<int64_t>(duration * 1e9));
+    publisher_->turn_left();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::nanoseconds(converted_time));
+    publisher_->stop();
+  });
+  future.get();
 
   return NodeStatus::SUCCESS;
 }
@@ -128,7 +157,19 @@ NodeStatus TurnRight::tick()
   double angle = std::stod(angle_msg.value());
   std::cout << "Turning right of " << angle << " degrees" << std::endl;
 
-  publisher_->turn_right(angle);
+    // Compute rotation time
+  double radiant_angle = angle * M_PI / 180.0;
+  double duration = radiant_angle / 0.4;
+  std::cout << "Movement duration: " << duration << std::endl;
+
+  auto future = std::async(std::launch::async, [this, duration]() {
+    auto converted_time = std::chrono::nanoseconds(static_cast<int64_t>(duration * 1e9));
+    publisher_->turn_right();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::nanoseconds(converted_time));
+    publisher_->stop();
+  });
+  future.get();
 
   return NodeStatus::SUCCESS;
 }
@@ -142,7 +183,12 @@ NodeStatus OpenToolArm::tick()
 {
   std::cout << "Executing OpenToolArm action" << std::endl;
 
-  publisher_->open_tool_arm();
+  auto future = std::async(std::launch::async, [this]() {
+    publisher_->open_tool_arm();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(4));
+    publisher_->stop();
+  });
 
   return NodeStatus::SUCCESS;
 }
@@ -156,7 +202,12 @@ NodeStatus CloseToolArm::tick()
 {
   std::cout << "Executing CloseToolArm action" << std::endl;
 
-  publisher_->close_tool_arm();
+  auto future = std::async(std::launch::async, [this]() {
+    publisher_->close_tool_arm();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(4));
+    publisher_->stop();
+  });
 
   return NodeStatus::SUCCESS;
 }
@@ -170,7 +221,12 @@ NodeStatus OpenMast::tick()
 {
   std::cout << "Executing OpenMast action" << std::endl;
 
-  publisher_->open_mast();
+  auto future = std::async(std::launch::async, [this]() {
+    publisher_->open_mast();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    publisher_->stop();
+  });
 
   return NodeStatus::SUCCESS;
 }
@@ -184,7 +240,12 @@ NodeStatus CloseMast::tick()
 {
   std::cout << "Executing CloseMast action" << std::endl;
 
-  publisher_->close_mast();
+  auto future = std::async(std::launch::async, [this]() {
+    publisher_->close_mast();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    publisher_->stop();
+  });
 
   return NodeStatus::SUCCESS;
 }
@@ -198,7 +259,12 @@ NodeStatus RotateMast::tick()
 {
   std::cout << "Executing RotateMast action" << std::endl;
 
-  publisher_->rotate_mast();
+  auto future = std::async(std::launch::async, [this]() {
+    publisher_->rotate_mast();
+    std::cout << "Waiting for the action to be completed before stopping" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(12));
+    publisher_->stop();
+  });
 
   return NodeStatus::SUCCESS;
 }

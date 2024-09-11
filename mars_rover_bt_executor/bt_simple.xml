@@ -3,20 +3,22 @@
      <BehaviorTree ID="MainTree">
         <Sequence name="root">
             <!-- <SetBlackboard output_key="speed" value="5" /> -->
-            <CheckCondition condition="low_battery" value="false"/>
+            <!-- <CheckCondition condition="low_battery" value="false"/>
             <Move time="5" speed="1.1"/>
             <MoveForward time="3" />
             <Stop />
             <TurnRight angle="90" />
-            <TurnLeft angle="40" />
+            <TurnLeft angle="40" /> -->
             <!--<OpenToolArm />
             <CloseToolArm />
             <OpenMast />
             <CloseMast />-->
             <MoveForward time="20"/>
-            <CheckCondition condition="low_battery" value="true"/>
-            <CheckCondition condition="low_battery" value="false"/>
-            <CheckCondition condition="low_battery" value="true"/>
+            <!-- <Fallback>
+                <CheckCondition condition="low_battery" value="true"/>
+                <CheckCondition condition="low_battery" value="true"/>
+                <CheckCondition condition="low_battery" value="true"/>
+            </Fallback> -->
         </Sequence>
      </BehaviorTree>
 
