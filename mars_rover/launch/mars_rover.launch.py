@@ -54,6 +54,12 @@ def generate_launch_description():
         output='screen'
     )
 
+    battery_node = Node(
+        package="mars_rover",
+        executable="battery_publisher",
+        output='screen'
+    )
+
     run_node = Node(
         package="mars_rover",
         executable="run_demo",
@@ -164,6 +170,7 @@ def generate_launch_description():
         arm_node,
         mast_node,
         wheel_node,
+        battery_node,
         run_node,
         odom_node,
         ros_gz_bridge,
