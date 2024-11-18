@@ -14,21 +14,25 @@ public:
     
     void stop();
     void move(double speed);
-    void move_forward();
+    void move_forward(double speed);
+    void move_backward(double speed);
     void turn_left();
     void turn_right();
     void open_tool_arm();
     void close_tool_arm();
+    void rotate_tool_arm();
     void open_mast();
     void close_mast();
     void rotate_mast();
+    void drill();
+    void trickle();
+    void take_picture();
 
 private:
     std::shared_ptr<rclcpp::Node> node_;
 
     rclcpp::Client<mars_rover_srvs::srv::MoveService>::SharedPtr move_client_;
 
-    rclcpp::Client<std_srvs::srv::Empty>::SharedPtr move_forward_client_;
     rclcpp::Client<std_srvs::srv::Empty>::SharedPtr turn_left_client_;
     rclcpp::Client<std_srvs::srv::Empty>::SharedPtr turn_right_client_;
 

@@ -1,7 +1,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <std_srvs/srv/empty.hpp>
-#include "mars_rover_bt_executor/action_publisher.hpp"
+#include "mars_rover_bt_manager/action_publisher.hpp"
 #include "mars_rover_srvs/srv/move_service.hpp"
 
 ActionPublisher::ActionPublisher(std::shared_ptr<rclcpp::Node> node) :
@@ -9,7 +9,6 @@ ActionPublisher::ActionPublisher(std::shared_ptr<rclcpp::Node> node) :
 {
     move_client_ = node_->create_client<mars_rover_srvs::srv::MoveService>("/move");
 
-    move_forward_client_ = node_->create_client<std_srvs::srv::Empty>("/move_forward");
     turn_left_client_ = node_->create_client<std_srvs::srv::Empty>("/turn_left");
     turn_right_client_ = node_->create_client<std_srvs::srv::Empty>("/turn_right");
 
@@ -52,12 +51,28 @@ void ActionPublisher::move(double speed)
     }
 }
 
-void ActionPublisher::move_forward()
+void ActionPublisher::move_forward(double speed)
 {
-    RCLCPP_INFO(node_->get_logger(), "Calling /move_forward service to move forward");
-    auto request = std::make_shared<std_srvs::srv::Empty::Request>();
+    RCLCPP_INFO(node_->get_logger(), "Calling /move service to move forward");
+    auto request = std::make_shared<mars_rover_srvs::srv::MoveService::Request>();
+    request->twist.linear.x = speed;
 
-    auto future = move_forward_client_->async_send_request(request);
+    auto future = move_client_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, future) == rclcpp::FutureReturnCode::SUCCESS)
+    {
+        RCLCPP_INFO(node_->get_logger(), "Service call compete");
+    } else {
+        RCLCPP_ERROR(node_->get_logger(), "Service call error");
+    }
+}
+
+void ActionPublisher::move_backward(double speed)
+{
+    RCLCPP_INFO(node_->get_logger(), "Calling /move service to move backward");
+    auto request = std::make_shared<mars_rover_srvs::srv::MoveService::Request>();
+    request->twist.linear.x = -1 * speed;
+
+    auto future = move_client_->async_send_request(request);
     if (rclcpp::spin_until_future_complete(node_, future) == rclcpp::FutureReturnCode::SUCCESS)
     {
         RCLCPP_INFO(node_->get_logger(), "Service call compete");
@@ -124,6 +139,11 @@ void ActionPublisher::close_tool_arm()
     }
 }
 
+void ActionPublisher::rotate_tool_arm()
+{
+    RCLCPP_INFO(node_->get_logger(), "Calling rotate arm service (mocking call)");
+}
+
 void ActionPublisher::open_mast()
 {
     RCLCPP_INFO(node_->get_logger(), "Calling /mast_open service");
@@ -164,4 +184,19 @@ void ActionPublisher::rotate_mast()
     } else {
         RCLCPP_ERROR(node_->get_logger(), "Service call error");
     }
+}
+
+void ActionPublisher::drill()
+{
+    RCLCPP_INFO(node_->get_logger(), "Calling drill service (mocking call)");
+}
+
+void ActionPublisher::trickle()
+{
+    RCLCPP_INFO(node_->get_logger(), "Calling trickle service (mocking call)");
+}
+
+void ActionPublisher::take_picture()
+{
+    RCLCPP_INFO(node_->get_logger(), "Calling camera service (mocking call)");
 }

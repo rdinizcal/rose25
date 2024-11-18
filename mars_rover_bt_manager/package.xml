@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>mars_rover_bt_executor</name>
+  <name>mars_rover_bt_manager</name>
   <version>0.0.1</version>
-  <description>Behavior tree executor for Demo Mars Rover</description>
+  <description>Behavior tree manager for Demo Mars Rover</description>
   <maintainer email="gianluca.filippone@gssi.it">Gianluca Filippone</maintainer>
   <author>Gianluca Filippone</author>
   <license>Apache-2.0</license>

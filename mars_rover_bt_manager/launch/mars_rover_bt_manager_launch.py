@@ -16,10 +16,10 @@ def generate_launch_description():
         description='Robot namespace'
     )
 
-    mars_rover_bt_executor_node = Node(
-        package='mars_rover_bt_executor',
-        executable='mars_rover_bt_executor_node',
-        name='mars_rover_bt_executor_node',
+    mars_rover_bt_manager_node = Node(
+        package='mars_rover_bt_manager',
+        executable='mars_rover_bt_manager_node',
+        name='mars_rover_bt_manager_node',
         output='screen',
         parameters=[
             {'bt_path': LaunchConfiguration('bt_path')},
@@ -30,5 +30,5 @@ def generate_launch_description():
     return LaunchDescription([
         bt_path_arg,
         namespace_arg,
-        mars_rover_bt_executor_node
+        mars_rover_bt_manager_node
     ])
